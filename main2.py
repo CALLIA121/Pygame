@@ -9,12 +9,13 @@ pygame.display.set_caption("Primitives War")
 
 
 class Button:
-    def __init__(self, text, x, y, width, height, color, hover_color, action=None):
+    def __init__(self, text, x, y, width, height, color, hover_color, action=None, argv=None):
         self.text = text
         self.rect = pygame.Rect(x, y, width, height)
         self.color = color
         self.hover_color = hover_color
         self.action = action
+        self.argv = argv
 
     def draw(self, screen):
         # Проверка наведения курсора
@@ -35,7 +36,12 @@ class Button:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
                 if self.action:
-                    self.action()
+                    if self.argv:
+                        self.action(self.argv)
+                    else:
+                        self.action()
+            else:
+                print('Button has no action(')
 
     def draw2(self, screen):
         pass
@@ -58,24 +64,50 @@ start = False
 
 
 def startGame():
-    global startBtn, start
+    global startBtn, start, classLabel, currClass
     print('Start')
     if not start:
         start = True
+        classLabel = 'Lock'
+        currClass = 'None'
         startBtn.text = 'Заного'
+        startBtn.color = (255, 0, 0)
+        startBtn.hover_color = (255 - 25, 0, 0)
     else:
         start = False
+        classLabel = 'None'
+        currClass = 'None'
         startBtn.text = 'Готов!'
+        startBtn.color = (128, 0, 128),
+        startBtn.hover_color = (128 - 20, 0, 128 - 20)
+
+
+def setClass(cl):
+    global currClass, classLabel
+    if currClass != cl:
+        currClass = cl
+        ch = {'Attaker': 'Атакер', 'Defender': 'Защитник', 'Shoter': 'Стрелок', }
+        classLabel = ch[cl]
+    else:
+        currClass = 'None'
+        classLabel = 'None'
 
 
 running = True
-can = False
-startBtn = Button('Готов!', 0, 0, 100, 50, (255, 0, 0),
-                  (255, 100, 0), startGame)
+classLabel = 'None'
+currClass = 'None'
+startBtn = Button('Готов!', 0, 0, 100, 50, (128, 0, 128),
+                  (128 - 20, 0, 128 - 20), startGame)
 
-buttons = [startBtn]
+classAttak = Button('Атакер', 100, 20, 100, 50, (255, 165, 0),
+                    (240, 150, 0), setClass, ('Attaker'))
+classDefender = Button('Защитник', 200, 20, 150, 50, (0, 128, 128),
+                       (0, 128 - 15, 128 - 15), setClass, ('Defender'))
+classShooter = Button('Стрелок', 350, 20, 110, 50, (0, 255, 0),
+                      (0, 255 - 25, 0), setClass, ('Shoter'))
+
+buttons = [startBtn, classAttak, classDefender, classShooter]
 while running:
-    print(start)
     for event in pygame.event.get():
         handle_event(event, buttons)
         if event.type == pygame.QUIT:
@@ -83,5 +115,16 @@ while running:
 
     screen.fill((255, 255, 255))
     drower(screen, buttons)
+    font = pygame.font.Font(None, 36)
+    if classLabel == 'None':
+        text_surface = font.render('Классы', True, 'black')
+    elif classLabel == 'Lock':
+        text_surface = font.render('Идет бой', True, 'black')
+    else:
+        text_surface = font.render(f'Выбран: {classLabel}', True, 'black')
+    text_rect = text_surface.get_rect(center=((100+350+110) // 2, 10))
+    screen.blit(text_surface, text_rect)
+    pygame.draw.line(screen, (0, 0, 0), (0, 72), (WIDTH, 72), 1)
+    pygame.draw.line(screen, (128, 0, 0), (WIDTH/2, 72), (WIDTH/2, HEIGHT), 5)
 
     pygame.display.flip()
