@@ -1,5 +1,6 @@
 import pygame
 import sys
+from settings import *
 
 pygame.init()
 WIDTH, HEIGHT = 1200, 600
@@ -9,6 +10,10 @@ pygame.display.set_caption("Primitives War")
 
 class Unit:
     def __init__(self, type):
+        self.type = type
+        self.x = 0
+        self.y = 0
+        self.HP = typeHP[type]
 
 class Button:
     def __init__(self, text, x, y, width, height, color, hover_color, action=None, argv=None):
@@ -78,7 +83,7 @@ def startGame():
     else:
         start = False
         typeLabel = 'None'
-        currtype = 'None'
+        currType = 'None'
         startBtn.text = 'Готов!'
         startBtn.color = (128, 0, 128),
         startBtn.hover_color = (128 - 20, 0, 128 - 20)
@@ -88,8 +93,8 @@ def setClass(cl):
     global currType, typeLabel
     if currType != cl:
         currType = cl
-        ch = {'Attaker': 'Атакер', 'Defender': 'Защитник', 'Shoter': 'Стрелок', }
-        typeLabel = ch[cl]
+        
+        typeLabel = typeRus[cl]
     else:
         currType = 'None'
         typeLabel = 'None'
