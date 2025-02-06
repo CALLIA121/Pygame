@@ -7,6 +7,8 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 pygame.display.set_caption("Primitives War")
 
+class Unit:
+    def __init__(self, type):
 
 class Button:
     def __init__(self, text, x, y, width, height, color, hover_color, action=None, argv=None):
@@ -64,38 +66,38 @@ start = False
 
 
 def startGame():
-    global startBtn, start, classLabel, currClass
+    global startBtn, start, typeLabel, currType
     print('Start')
     if not start:
         start = True
-        classLabel = 'Lock'
-        currClass = 'None'
+        typeLabel = 'Lock'
+        currType = 'None'
         startBtn.text = 'Заного'
         startBtn.color = (255, 0, 0)
         startBtn.hover_color = (255 - 25, 0, 0)
     else:
         start = False
-        classLabel = 'None'
-        currClass = 'None'
+        typeLabel = 'None'
+        currtype = 'None'
         startBtn.text = 'Готов!'
         startBtn.color = (128, 0, 128),
         startBtn.hover_color = (128 - 20, 0, 128 - 20)
 
 
 def setClass(cl):
-    global currClass, classLabel
-    if currClass != cl:
-        currClass = cl
+    global currType, typeLabel
+    if currType != cl:
+        currType = cl
         ch = {'Attaker': 'Атакер', 'Defender': 'Защитник', 'Shoter': 'Стрелок', }
-        classLabel = ch[cl]
+        typeLabel = ch[cl]
     else:
-        currClass = 'None'
-        classLabel = 'None'
+        currType = 'None'
+        typeLabel = 'None'
 
 
 running = True
-classLabel = 'None'
-currClass = 'None'
+typeLabel = 'None'
+currType = 'None'
 startBtn = Button('Готов!', 0, 0, 100, 50, (128, 0, 128),
                   (128 - 20, 0, 128 - 20), startGame)
 
@@ -116,12 +118,12 @@ while running:
     screen.fill((255, 255, 255))
     drower(screen, buttons)
     font = pygame.font.Font(None, 36)
-    if classLabel == 'None':
+    if typeLabel == 'None':
         text_surface = font.render('Классы', True, 'black')
-    elif classLabel == 'Lock':
+    elif typeLabel == 'Lock':
         text_surface = font.render('Идет бой', True, 'black')
     else:
-        text_surface = font.render(f'Выбран: {classLabel}', True, 'black')
+        text_surface = font.render(f'Выбран: {typeLabel}', True, 'black')
     text_rect = text_surface.get_rect(center=((100+350+110) // 2, 10))
     screen.blit(text_surface, text_rect)
     pygame.draw.line(screen, (0, 0, 0), (0, 72), (WIDTH, 72), 1)
