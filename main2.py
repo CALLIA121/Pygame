@@ -2,7 +2,7 @@ import pygame
 import sys
 
 pygame.init()
-WIDTH, HEIGHT = 1400, 800
+WIDTH, HEIGHT = 1200, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 pygame.display.set_caption("Primitives War")
