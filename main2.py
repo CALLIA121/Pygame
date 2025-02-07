@@ -5,6 +5,7 @@ from settings import *
 pygame.init()
 WIDTH, HEIGHT = 1200, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+coins = 100
 
 pygame.display.set_caption("Primitives War")
 
@@ -136,5 +137,11 @@ while running:
     pygame.draw.line(screen, (0, 0, 0), (0, 72), (WIDTH, 72), 1)
     pygame.draw.line(screen, (128, 0, 0), (WIDTH / 2, 72),
                      (WIDTH / 2, HEIGHT), 5)
+
+    font = pygame.font.Font(None, 50)
+    text_surface = font.render(f'{coins}$', True, 'gold')
+    text_rect = text_surface.get_rect(
+        center=(WIDTH - (10 * len(f'{coins}$')), 20))
+    screen.blit(text_surface, text_rect)
 
     pygame.display.flip()
