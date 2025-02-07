@@ -10,3 +10,6 @@ typeDamag = {
 typeDist = {
     'Attaker': 20, 'Defender': 20, 'Shoter': 50
 }
+typeCost = {
+    'Attaker': 10, 'Defender': 50, 'Shoter': 50
+}

@@ -105,7 +105,7 @@ def setClass(cl):
 running = True
 typeLabel = 'None'
 currType = 'None'
-startBtn = Button('Готов!', 0, 0, 100, 50, (128, 0, 128),
+startBtn = Button('Готов!', 0, 20, 100, 50, (128, 0, 128),
                   (128 - 20, 0, 128 - 20), startGame)
 
 classAttak = Button('Атакер', 100, 20, 100, 50, (255, 165, 0),
