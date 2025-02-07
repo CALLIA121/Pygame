@@ -2,7 +2,7 @@ import pygame
 import sys
 from settings import *
 
-print('Ne')
+print('It is the best game')
 pygame.init()
 WIDTH, HEIGHT = 1200, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
