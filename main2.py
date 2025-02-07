@@ -18,18 +18,24 @@ class Unit:
 
 
 class Button:
-    def __init__(self, text, x, y, width, height, color, hover_color, action=None, argv=None):
+    def __init__(self, text, x, y, width, height, color, hover_color, action=None, argv=None, about=None):
         self.text = text
         self.rect = pygame.Rect(x, y, width, height)
         self.color = color
+        self.X = x
+        self.Y = y
+        self.width = width
+        self.height = height
         self.hover_color = hover_color
         self.action = action
         self.argv = argv
+        self.about = about
 
     def draw(self, screen):
         # Проверка наведения курсора
         mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse_pos):
+            pygame.draw.rect(screen, self.hover_color, self.rect)
             pygame.draw.rect(screen, self.hover_color, self.rect)
         else:
             pygame.draw.rect(screen, self.color, self.rect)
@@ -53,7 +59,33 @@ class Button:
                     print('Button has no action(')
 
     def draw2(self, screen):
-        pass
+        mouse_pos = pygame.mouse.get_pos()
+        if self.about and self.rect.collidepoint(mouse_pos):
+            lines = self.about.splitlines()
+            count = len(lines)
+            maxLen = max([len(x) for x in lines])
+            width = 10 * maxLen
+            height = 25 * count
+            LineX, LineY = self.X + self.width // 2, self.Y + self.height + 10 + 25 // 2
+            points = [(self.X + self.width // 2, self.Y + self.height),
+                      (self.X + self.width // 2 - 10, self.Y + self.height + 10),
+                      (self.X + self.width // 2 - 10 -
+                       width // 2, self.Y + self.height + 10),
+                      (self.X + self.width // 2 - 10 -
+                       width // 2, self.Y + self.height + 10 + height),
+                      (self.X + self.width // 2 + 10 +
+                       width // 2, self.Y + self.height + 10 + height),
+                      (self.X + self.width // 2 + 10 +
+                       width // 2, self.Y + self.height + 10),
+                      (self.X + self.width // 2 + 10, self.Y + self.height + 10)]
+            pygame.draw.polygon(screen, (255, 255, 255), points)
+            pygame.draw.polygon(screen, (0, 0, 0), points, 2)
+            font = pygame.font.Font(None, 25)
+            for i in range(len(lines)):
+                text_surface = font.render(lines[i], True, 'black')
+                text_rect = text_surface.get_rect(
+                    center=(LineX, LineY + i * 25))
+                screen.blit(text_surface, text_rect)
 
 
 def handle_event(event, buttons: list):
@@ -109,11 +141,11 @@ startBtn = Button('Готов!', 0, 20, 100, 50, (128, 0, 128),
                   (128 - 20, 0, 128 - 20), startGame)
 
 classAttak = Button('Атакер', 100, 20, 100, 50, (255, 165, 0),
-                    (240, 150, 0), setClass, ('Attaker'))
+                    (240, 150, 0), setClass, ('Attaker'), f'Урон {typeDamag["Attaker"]}\nОЗ {typeHP["Attaker"]}\nСтоит {typeCost["Attaker"]}$\nБлижний бой')
 classDefender = Button('Защитник', 200, 20, 150, 50, (0, 128, 128),
-                       (0, 128 - 15, 128 - 15), setClass, ('Defender'))
+                       (0, 128 - 15, 128 - 15), setClass, ('Defender'), f'Урон {typeDamag["Defender"]}\nОЗ {typeHP["Defender"]}\nСтоит {typeCost["Defender"]}$\nБлижний бой')
 classShooter = Button('Стрелок', 350, 20, 110, 50, (0, 255, 0),
-                      (0, 255 - 25, 0), setClass, ('Shoter'))
+                      (0, 255 - 25, 0), setClass, ('Shooter'), f'Урон {typeDamag["Shooter"]}\nОЗ {typeHP["Shooter"]}\nСтоит {typeCost["Shooter"]}$\nДальний бой')
 
 buttons = [startBtn, classAttak, classDefender, classShooter]
 while running:
@@ -136,5 +168,12 @@ while running:
     pygame.draw.line(screen, (0, 0, 0), (0, 72), (WIDTH, 72), 1)
     pygame.draw.line(screen, (128, 0, 0), (WIDTH / 2, 72),
                      (WIDTH / 2, HEIGHT), 5)
+
+    font = pygame.font.Font(None, 50)
+    coinsText = f"10^9 $"
+    text_surface = font.render(coinsText, True, 'gold')
+    text_rect = text_surface.get_rect(
+        center=(WIDTH - (10 * len(coinsText)), 20))
+    screen.blit(text_surface, text_rect)
 
     pygame.display.flip()
