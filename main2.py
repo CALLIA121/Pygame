@@ -2,7 +2,7 @@ import pygame
 import sys
 from settings import *
 
-print(' ')
+print('Ne Mihail')
 pygame.init()
 WIDTH, HEIGHT = 1200, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -135,6 +135,7 @@ while running:
     text_rect = text_surface.get_rect(center=((100 + 350 + 110) // 2, 10))
     screen.blit(text_surface, text_rect)
     pygame.draw.line(screen, (0, 0, 0), (0, 72), (WIDTH, 72), 1)
-    pygame.draw.line(screen, (128, 0, 0), (WIDTH / 2, 72), (WIDTH / 2, HEIGHT), 5)
+    pygame.draw.line(screen, (128, 0, 0), (WIDTH / 2, 72),
+                     (WIDTH / 2, HEIGHT), 5)
 
     pygame.display.flip()
