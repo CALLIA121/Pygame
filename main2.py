@@ -50,8 +50,8 @@ class Button:
                         self.action(self.argv)
                     else:
                         self.action()
-            else:
-                print('Button has no action(')
+                else:
+                    print('Button has no action(')
 
     def draw2(self, screen):
         pass
