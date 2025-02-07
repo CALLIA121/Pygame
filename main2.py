@@ -2,11 +2,13 @@ import pygame
 import sys
 from settings import *
 
+print(' ')
 pygame.init()
 WIDTH, HEIGHT = 1200, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 pygame.display.set_caption("Primitives War")
+
 
 class Unit:
     def __init__(self, type):
@@ -14,6 +16,7 @@ class Unit:
         self.x = 0
         self.y = 0
         self.HP = typeHP[type]
+
 
 class Button:
     def __init__(self, text, x, y, width, height, color, hover_color, action=None, argv=None):
@@ -93,7 +96,7 @@ def setClass(cl):
     global currType, typeLabel
     if currType != cl:
         currType = cl
-        
+
         typeLabel = typeRus[cl]
     else:
         currType = 'None'
@@ -129,9 +132,9 @@ while running:
         text_surface = font.render('Идет бой', True, 'black')
     else:
         text_surface = font.render(f'Выбран: {typeLabel}', True, 'black')
-    text_rect = text_surface.get_rect(center=((100+350+110) // 2, 10))
+    text_rect = text_surface.get_rect(center=((100 + 350 + 110) // 2, 10))
     screen.blit(text_surface, text_rect)
     pygame.draw.line(screen, (0, 0, 0), (0, 72), (WIDTH, 72), 1)
-    pygame.draw.line(screen, (128, 0, 0), (WIDTH/2, 72), (WIDTH/2, HEIGHT), 5)
+    pygame.draw.line(screen, (128, 0, 0), (WIDTH / 2, 72), (WIDTH / 2, HEIGHT), 5)
 
     pygame.display.flip()
