@@ -1,13 +1,18 @@
 import pygame
 import sys
+
+from pygame import MOUSEBUTTONDOWN
+
 from settings import *
 
 pygame.init()
 WIDTH, HEIGHT = 1200, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-coins = 100
+coins = 10000
 
 pygame.display.set_caption("Primitives War")
+
+units = []
 
 
 class Unit:
@@ -74,13 +79,13 @@ start = False
 
 
 def startGame():
-    global startBtn, start, typeLabel, currType
+    global startBtn, start, typeLabel, units, currType
     print('Start')
     if not start:
         start = True
         typeLabel = 'Lock'
         currType = 'None'
-        startBtn.text = 'Заного'
+        startBtn.text = 'Заново'
         startBtn.color = (255, 0, 0)
         startBtn.hover_color = (255 - 25, 0, 0)
     else:
@@ -90,6 +95,8 @@ def startGame():
         startBtn.text = 'Готов!'
         startBtn.color = (128, 0, 128),
         startBtn.hover_color = (128 - 20, 0, 128 - 20)
+        units = []
+        coins = 10000
 
 
 def setClass(cl):
@@ -117,14 +124,33 @@ classShooter = Button('Стрелок', 350, 20, 110, 50, (0, 255, 0),
                       (0, 255 - 25, 0), setClass, ('Shoter'))
 
 buttons = [startBtn, classAttak, classDefender, classShooter]
+
+
 while running:
     for event in pygame.event.get():
         handle_event(event, buttons)
+
+        if event.type == MOUSEBUTTONDOWN and event.button == 1:
+            if not start and currType != 'None':
+                x, y = event.pos
+                if x < WIDTH / 2 and y > 72:
+                    cost = typeCost.get(currType, 0)
+                    if coins >= cost:
+                        unit = Unit(currType)
+                        unit.x = x
+                        unit.y = y
+                        units.append(unit)
+                        coins -= cost
         if event.type == pygame.QUIT:
             running = False
 
     screen.fill((255, 255, 255))
     drower(screen, buttons)
+    for unit in units:
+        color = typeColors.get(unit.type)
+        pygame.draw.rect(screen, color, (unit.x - 15, unit.y - 15, 30, 30))
+        pygame.draw.rect(screen, 'black', (unit.x - 15, unit.y - 15, 30, 30), 2)
+
     font = pygame.font.Font(None, 36)
     if typeLabel == 'None':
         text_surface = font.render('Классы', True, 'black')
