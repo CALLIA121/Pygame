@@ -121,7 +121,7 @@ classAttak = Button('Атакер', 100, 20, 100, 50, (255, 165, 0),
 classDefender = Button('Защитник', 200, 20, 150, 50, (0, 128, 128),
                        (0, 128 - 15, 128 - 15), setClass, ('Defender'))
 classShooter = Button('Стрелок', 350, 20, 110, 50, (0, 255, 0),
-                      (0, 255 - 25, 0), setClass, ('Shoter'))
+                      (0, 255 - 25, 0), setClass, ('Shooter'))
 
 buttons = [startBtn, classAttak, classDefender, classShooter]
 
