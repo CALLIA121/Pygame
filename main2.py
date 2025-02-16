@@ -21,7 +21,7 @@ SCREENS = {
 current_screen = SCREENS["main_menu"]
 
 # Игровые переменные
-coins = 10000
+coins = 1000
 current_level = -1
 units = []
 enemy_units = []
@@ -142,7 +142,7 @@ def start_level(level_num):
     global current_screen, start, coins, units, currType, typeLabel, current_level
     current_screen = SCREENS["game"]
     start = False
-    coins = 10000
+    coins = 1000
     units = []
     currType = 'None'
     typeLabel = 'None'

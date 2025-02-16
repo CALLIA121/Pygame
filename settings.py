@@ -17,10 +17,10 @@ typeDist = {
     'Attaker': 50, 'Defender': 50, 'Shooter': 200
 }
 typeSpeed = {
-    'Attaker': 2, 'Defender': 1, 'Shooter': 1
+    'Attaker': 1.2, 'Defender': 1, 'Shooter': 1
 }
 typeCost = {
-    'Attaker': 10, 'Defender': 50, 'Shooter': 50
+    'Attaker': 50, 'Defender': 150, 'Shooter': 300
 }
 typeColors = {
     'Attaker': (255, 165, 0),
