@@ -41,6 +41,7 @@ class Unit:
         self.speed = typeSpeed[type]
         self.attack_range = typeDist[type]
         self.damage = typeDamag[type]
+        self.lastTikShoot = 0
 
     def move(self, targets):
         """ Двигается в сторону ближайшего врага, если расстояние больше 30 пикселей. """
@@ -302,12 +303,14 @@ while running:
             it += 1
             for unit in units:
                 unit.move(enemy_units)  # Двигается к врагам
-                if it % typeKD[unit.type] == 0:
+                if it - unit.lastTikShoot > typeKD[unit.type]:
+                    unit.lastTikShoot = it
                     unit.attack(enemy_units)  # Атакует
 
             for enemy in enemy_units:
                 enemy.move(units)  # Двигается к союзникам
-                if it % typeKD[enemy.type] == 0:
+                if it - enemy.lastTikShoot > typeKD[enemy.type]:
+                    enemy.lastTikShoot = it
                     enemy.attack(units)  # Атакует
 
         # Игровой интерфейс
