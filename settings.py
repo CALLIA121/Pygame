@@ -5,22 +5,22 @@ tupeNum = {
     0: 'Attaker', 1: 'Defender', 2: 'Shooter'
 }
 typeHP = {
-    'Attaker': 50, 'Defender': 140, 'Shooter': 30
+    'Attaker': 25, 'Defender': 50, 'Shooter': 10
 }
 typeDamag = {
-    'Attaker': 10, 'Defender': 5, 'Shooter': 30
+    'Attaker': 5, 'Defender': 2, 'Shooter': 30
 }
 typeKD = {
-    'Attaker': 50, 'Defender': 70, 'Shooter': 200
+    'Attaker': 10, 'Defender': 10, 'Shooter': 75
 }
 typeDist = {
-    'Attaker': 50, 'Defender': 50, 'Shooter': 200
+    'Attaker': 30, 'Defender': 50, 'Shooter': 250
 }
 typeSpeed = {
-    'Attaker': 1.2, 'Defender': 1, 'Shooter': 1
+    'Attaker': 3, 'Defender': 2.5, 'Shooter': 2
 }
 typeCost = {
-    'Attaker': 50, 'Defender': 150, 'Shooter': 300
+    'Attaker': 100, 'Defender': 150, 'Shooter': 200
 }
 typeColors = {
     'Attaker': (255, 165, 0),

@@ -21,7 +21,7 @@ SCREENS = {
 current_screen = SCREENS["main_menu"]
 
 # Игровые переменные
-coins = 1000
+coins = 0
 current_level = -1
 units = []
 enemy_units = []
@@ -64,13 +64,16 @@ class Unit:
 
     def attack(self, targets):
         """ Атака всех врагов в радиусе typeDist. """
-        for target in targets:
-            distance = math.sqrt((self.x - target.x) **
-                                 2 + (self.y - target.y) ** 2)
+        # Находим ближайшего противника
+        if targets:
+            nearest_enemy = min(targets, key=lambda enemy: math.dist(
+                (self.x, self.y), (enemy.x, enemy.y)))
+            distance = math.sqrt((self.x - nearest_enemy.x) **
+                                 2 + (self.y - nearest_enemy.y) ** 2)
             if distance <= self.attack_range:
-                target.HP -= self.damage  # Наносим урон
-                if target.HP <= 0:
-                    targets.remove(target)  # Удаляем юнита, если HP <= 0
+                nearest_enemy.HP -= self.damage  # Наносим урон
+                if nearest_enemy.HP <= 0:
+                    targets.remove(nearest_enemy)  # Удаляем юнита, если HP <= 0
 
     def draw(self, screen):
         """ Отрисовка юнита и полоски HP. """
@@ -139,15 +142,16 @@ def switch_screen(screen_name):
 
 
 def start_level(level_num):
-    global current_screen, start, coins, units, currType, typeLabel, current_level
+    global current_screen, start, coins, units, currType, typeLabel, current_level, enemy_units
     current_screen = SCREENS["game"]
     start = False
-    coins = 1000
+    coins = 100000
     units = []
+    enemy_units = []
     currType = 'None'
     typeLabel = 'None'
     current_level = level_num
-    spawn_enemies()  # Спавним врагов
+    # spawn_enemies()  # Спавним врагов
 
 
 def spawn_enemies():
@@ -273,6 +277,15 @@ while running:
                                 unit.y = y
                                 units.append(unit)
                                 coins -= cost
+                    elif x > WIDTH / 2 + 15 and y > 105:
+                        overlap = any(
+                            abs(unit.x - x) < 30 and abs(unit.y - y) < 30 for unit in units)
+                        if not overlap:
+                            unit = Unit(currType)
+                            unit.x = x
+                            unit.y = y
+                            unit.isEnemy = True
+                            enemy_units.append(unit)
 
     # Отрисовка
     screen.fill((255, 255, 255))
@@ -351,5 +364,6 @@ while running:
             pygame.draw.rect(screen, (150, 150, 150), (x - 15, y - 15, 30, 30))
 
     pygame.display.flip()
+    pygame.time.Clock().tick(60)
 
 pygame.quit()
