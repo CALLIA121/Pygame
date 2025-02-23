@@ -94,11 +94,11 @@ class Unit:
         hp_color = (255, 0, 0) if self.isEnemy else (0, 255, 0)
 
         pygame.draw.rect(screen, (50, 50, 50), (self.x -
-                         15, self.y + 20, hp_bar_width, 5))
+                                                15, self.y + 20, hp_bar_width, 5))
 
         # Рисуем полоску здоровья
         pygame.draw.rect(screen, hp_color, (self.x -
-                         15, self.y + 20, hp_width, 5))
+                                            15, self.y + 20, hp_width, 5))
 
 
 class Button:
@@ -154,6 +154,18 @@ def start_level(level_num):
     # spawn_enemies()  # Спавним врагов
 
 
+def return_to_main_menu():
+    global current_screen, units, enemy_units, coins, start, currType, typeLabel, current_level
+    current_screen = SCREENS["main_menu"]
+    units = []
+    enemy_units = []
+    coins = 0
+    start = False
+    currType = 'None'
+    typeLabel = 'None'
+    current_level = -1
+
+
 def spawn_enemies():
     global enemy_units
     enemy_units = []
@@ -180,7 +192,7 @@ main_menu_buttons = [
     ),
     Button(
         "Выход", WIDTH // 2 - 150, HEIGHT // 2 + 50, 300, 50,
-        (128, 0, 0), (100, 0, 0),
+        (200, 0, 0), (100, 0, 0),
         quit_game
     )
 ]
@@ -212,7 +224,10 @@ classDefender = Button('Защитник', 200, 40, 150, 50,
 classShooter = Button('Стрелок', 350, 40, 110, 50,
                       (0, 255, 0), (0, 230, 0),
                       lambda: setClass('Shooter'))
-game_buttons = [startBtn, classAttak, classDefender, classShooter]
+# выход в главное меню с лвла
+exitBtn = Button('Выход в меню', WIDTH - 200, 40, 180, 50,
+                 (200, 0, 0), (100, 0, 0), return_to_main_menu)
+game_buttons = [startBtn, classAttak, classDefender, classShooter, exitBtn]
 
 
 def startGame():
@@ -356,7 +371,7 @@ while running:
         # Монеты
         font = pygame.font.Font(None, 50)
         text = font.render(f'{coins}$', True, 'gold')
-        screen.blit(text, (WIDTH - 200, 20))
+        screen.blit(text, (WIDTH - 200, 5))
 
         x, y = pygame.mouse.get_pos()
 
