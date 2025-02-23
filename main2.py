@@ -42,6 +42,7 @@ class Unit:
         self.attack_range = typeDist[type]
         self.damage = typeDamag[type]
         self.lastTikShoot = 0
+        self.attack_line = None
 
     def move(self, targets):
         """ Двигается в сторону ближайшего врага, если расстояние больше 30 пикселей. """
@@ -64,16 +65,23 @@ class Unit:
 
     def attack(self, targets):
         """ Атака всех врагов в радиусе typeDist. """
-        # Находим ближайшего противника
         if targets:
             nearest_enemy = min(targets, key=lambda enemy: math.dist(
                 (self.x, self.y), (enemy.x, enemy.y)))
-            distance = math.sqrt((self.x - nearest_enemy.x) **
-                                 2 + (self.y - nearest_enemy.y) ** 2)
+            distance = math.sqrt((self.x - nearest_enemy.x) ** 2 + (self.y - nearest_enemy.y) ** 2)
+
             if distance <= self.attack_range:
-                nearest_enemy.HP -= self.damage  # Наносим урон
+                # Запоминаем координаты для линии выстрела (только для стрелков)
+                if self.type == "Shooter":
+                    self.attack_line = (
+                        (self.x, self.y),
+                        (nearest_enemy.x, nearest_enemy.y),
+                        5  # Время отображения линии в кадрах
+                    )
+
+                nearest_enemy.HP -= self.damage
                 if nearest_enemy.HP <= 0:
-                    targets.remove(nearest_enemy)  # Удаляем юнита, если HP <= 0
+                    targets.remove(nearest_enemy)
 
     def draw(self, screen):
         """ Отрисовка юнита и полоски HP. """
@@ -99,6 +107,15 @@ class Unit:
         # Рисуем полоску здоровья
         pygame.draw.rect(screen, hp_color, (self.x -
                                             15, self.y + 20, hp_width, 5))
+        # Рисуем линию выстрела (если есть)
+        if self.attack_line and self.type == "Shooter":
+            start_pos, end_pos, frames = self.attack_line
+            pygame.draw.line(screen, (255, 255, 0), start_pos, end_pos, 3)
+
+            # Уменьшаем время отображения
+            self.attack_line = (start_pos, end_pos, frames - 1)
+            if frames <= 1:
+                self.attack_line = None
 
 
 class Button:
@@ -340,6 +357,11 @@ while running:
                 if it - enemy.lastTikShoot > typeKD[enemy.type]:
                     enemy.lastTikShoot = it
                     enemy.attack(units)  # Атакует
+
+            for unit in units + enemy_units:
+                if unit.type == "Shooter" and unit.attack_line:
+                    # Обновление линии происходит автоматически в методе draw
+                    pass
 
         # Игровой интерфейс
         for btn in game_buttons:
