@@ -202,7 +202,7 @@ def start_level(level_num):
         start = False
         coins = 100000
         for unit in enemy_units:
-            print(f"({unit.x}, {unit.y}, {unit.type}),")
+            print(f"({unit.x}, {unit.y}, '{unit.type}'),")
         units = []
         enemy_units = []
         currType = 'None'
@@ -233,7 +233,7 @@ def spawn_enemies(level_num):
     coins = data['money']
     enemyList = data['enemyList']
     for x, y, type in enemyList:
-        unit = Unit(type)
+        unit = Unit(type, True)
         unit.x = x
         unit.y = y
         unit.isEnemy = True
@@ -290,14 +290,14 @@ level_select_buttons = [
 # Кнопки при окончании боя
 fight_end_buttons = [
     Button(
-        "В главное меню", WIDTH // 2, st + 55 * 4, 300, 50,
+        "В главное меню", WIDTH // 2 - 155, HEIGHT // 2, 300, 50,
         (128, 128, 128), (100, 100, 100),
         lambda: switch_screen(SCREENS["main_menu"])
     ),
     Button(
-        "Заного", WIDTH // 2, st + 55 * 4, 300, 50,
+        "Заного", WIDTH // 2 + 155, HEIGHT // 2, 300, 50,
         (128, 128, 128), (100, 100, 100),
-        start_level, current_level
+        lambda: startGame()
     ),
 ]
 
@@ -481,16 +481,47 @@ while running:
 
             if enemy_units == [] and units != []:
                 current_screen = SCREENS['win']
-                if current_level > playerLevel:
-                    playerLevel = current_level
+                if current_level == playerLevel:
+                    playerLevel = current_level + 1
                     with open(r'D:\!PycharmProjects\!PrimitiveWar2\data\player.json') as f:
                         data = json.load(f)
 
                     data['level'] = playerLevel
 
-                    text = json.dump(data)
+                    text = json.dumps(data)
                     with open(r'D:\!PycharmProjects\!PrimitiveWar2\data\player.json', 'w') as f:
                         f.writelines(text)
+                st = HEIGHT // 2 - 50
+                level_select_buttons = [
+                    Button(
+                        "1 уровень", WIDTH // 2 - 150, st, 300, 50,
+                        (0, 200, 0), (0, 150, 0),
+                        start_level, 1
+                    ),
+                    Button(
+                        "2 уровень", WIDTH // 2 - 150, st + 55, 300, 50,
+                        (0, 200, 0) if playerLevel > 1 else (200, 0, 0),
+                        (0, 150, 0) if playerLevel > 1 else (150, 0, 0),
+                        start_level, 2
+                    ),
+                    Button(
+                        "3 уровень", WIDTH // 2 - 150, st + 55 * 2, 300, 50,
+                        (0, 200, 0) if playerLevel > 2 else (200, 0, 0),
+                        (0, 150, 0) if playerLevel > 2 else (150, 0, 0),
+                        start_level, 3
+                    ),
+                    Button(
+                        "Песочница", WIDTH // 2 - 150, st + 55 * 3, 300, 50,
+                        (0, 200, 0) if playerLevel > 3 else (200, 0, 0),
+                        (0, 150, 0) if playerLevel > 3 else (150, 0, 0),
+                        start_level, 4
+                    ),
+                    Button(
+                        "Назад", WIDTH // 2 - 150, st + 55 * 4, 300, 50,
+                        (128, 128, 128), (100, 100, 100),
+                        lambda: switch_screen(SCREENS["main_menu"])
+                    )
+                ]
             elif enemy_units != [] and units == []:
                 current_screen = SCREENS['lose']
             elif enemy_units == [] and units == []:
