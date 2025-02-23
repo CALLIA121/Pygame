@@ -27,3 +27,13 @@ typeColors = {
     'Defender': (0, 128, 128),
     'Shooter': (0, 255, 0)
 }
+typeImagePath = {
+    'AttakerN': r'data\atacker_n.png',
+    'DefenderN': r'data\defender_n.png',
+    'ShooterN': r'data\shooter_n.png',
+    'AttakerE': r'data\atacker_e.png',
+    'DefenderE': r'data\defender_e.png',
+    'ShooterE': r'data\shooter_e.png'
+}
+menubackground = r'D:\!PycharmProjects\!PrimitiveWar2\data\background_menu.png'
+levelPath = r'D:\!PycharmProjects\!PrimitiveWar2\data\level'

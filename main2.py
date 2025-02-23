@@ -4,21 +4,24 @@ import sys
 from pygame import MOUSEBUTTONDOWN
 from settings import *
 import random
-
-# Инициализация Pygame
-pygame.init()
-WIDTH, HEIGHT = 1200, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Primitives War")
+import json
 
 # Состояния игры
 SCREENS = {
     "main_menu": 0,
     "level_select": 1,
-    "game": 2
+    "game": 2,
+    "win": 3,
+    "lose": 4,
+    'draw': 5
 }
 
 current_screen = SCREENS["main_menu"]
+
+with open(r'D:\!PycharmProjects\!PrimitiveWar2\data\player.json') as f:
+    data = json.load(f)
+
+playerLevel = data['level']
 
 # Игровые переменные
 coins = 0
@@ -28,21 +31,43 @@ enemy_units = []
 start = False
 typeLabel = 'None'
 currType = 'None'
+typeImage = {
+    'Attaker': pygame.image.load(typeImagePath['AttakerN']),
+    'Defender': pygame.image.load(typeImagePath['DefenderN']),
+    'Shooter': pygame.image.load(typeImagePath['ShooterN'])
+}
+typeImageEnemy = {
+    'Attaker': pygame.image.load(typeImagePath['AttakerE']),
+    'Defender': pygame.image.load(typeImagePath['DefenderE']),
+    'Shooter': pygame.image.load(typeImagePath['ShooterE'])
+}
+menubackgroundPic = pygame.image.load(menubackground)
+
+# Инициализация Pygame
+pygame.init()
+WIDTH, HEIGHT = 1200, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Primitives War")
 
 
 class Unit:
-    def __init__(self, type):
+    def __init__(self, type, isEnemy=False):
         self.type = type
         self.x = 0
         self.y = 0
         self.HP = typeHP[type]
         self.max_HP = self.HP  # Запоминаем максимальное здоровье
-        self.isEnemy = False
+        self.isEnemy = isEnemy
         self.speed = typeSpeed[type]
         self.attack_range = typeDist[type]
         self.damage = typeDamag[type]
         self.lastTikShoot = 0
         self.attack_line = None
+        if isEnemy:
+            self.image = typeImageEnemy[type]
+        else:
+            self.image = typeImage[type]
+        self.rect = self.image.get_rect()
 
     def move(self, targets):
         """ Двигается в сторону ближайшего врага, если расстояние больше 30 пикселей. """
@@ -77,7 +102,7 @@ class Unit:
                     self.attack_line = (
                         (self.x, self.y),
                         (nearest_enemy.x, nearest_enemy.y),
-                        5  # Время отображения линии в кадрах
+                        0  # Время отображения линии в кадрах
                     )
 
                 nearest_enemy.HP -= self.damage
@@ -85,13 +110,8 @@ class Unit:
     def draw(self, screen):
         """ Отрисовка юнита и полоски HP. """
         # Цвет юнита
-        color = typeColors.get(self.type, (0, 0, 0))
-        pygame.draw.rect(screen, color, (self.x - 15, self.y - 15, 30, 30))
-
-        # Обводка (красная для врагов, черная для союзников)
-        border_color = 'red' if self.isEnemy else 'black'
-        pygame.draw.rect(screen, border_color,
-                         (self.x - 15, self.y - 15, 30, 30), 2)
+        self.rect.topleft = (self.x - 17, self.y - 17)
+        screen.blit(self.image, self.rect)
 
         # Отрисовка полоски HP
         hp_bar_width = 30  # Полная ширина полоски
@@ -109,11 +129,29 @@ class Unit:
         # Рисуем линию выстрела (если есть)
         if self.attack_line and self.type == "Shooter":
             start_pos, end_pos, frames = self.attack_line
-            pygame.draw.line(screen, (255, 255, 0), start_pos, end_pos, 3)
+            if frames <= 5:
+                current_end_pos = (
+                    start_pos[0] + (end_pos[0] - start_pos[0]) * (frames / 5),
+                    start_pos[1] + (end_pos[1] - start_pos[1]) * (frames / 5)
+                )
+            else:
+                current_end_pos = end_pos
 
-            # Уменьшаем время отображения
-            self.attack_line = (start_pos, end_pos, frames - 1)
-            if frames <= 1:
+            if frames > 0:
+                current_trail_pos = (
+                    start_pos[0] + (end_pos[0] - start_pos[0]
+                                    ) * ((frames - 1) / 5),
+                    start_pos[1] + (end_pos[1] - start_pos[1]
+                                    ) * ((frames - 1) / 5)
+                )
+            else:
+                current_trail_pos = start_pos
+
+            # Рисование пули
+            pygame.draw.line(screen, (255, 255, 0),
+                             current_trail_pos, current_end_pos, 3)
+            self.attack_line = (start_pos, end_pos, frames + 1)
+            if frames == 5:
                 self.attack_line = None
 
 
@@ -159,44 +197,47 @@ def switch_screen(screen_name):
 
 def start_level(level_num):
     global current_screen, start, coins, units, currType, typeLabel, current_level, enemy_units
-    current_screen = SCREENS["game"]
-    start = False
-    coins = 100000
-    units = []
-    enemy_units = []
-    currType = 'None'
-    typeLabel = 'None'
-    current_level = level_num
-    # spawn_enemies()  # Спавним врагов
+    if playerLevel >= level_num:
+        current_screen = SCREENS["game"]
+        start = False
+        coins = 100000
+        for unit in enemy_units:
+            print(f"({unit.x}, {unit.y}, {unit.type}),")
+        units = []
+        enemy_units = []
+        currType = 'None'
+        typeLabel = 'None'
+        current_level = level_num
+        if level_num != 4:  # Не в песочнице
+            spawn_enemies(level_num)  # Спавним врагов
 
 
 def return_to_main_menu():
-    global current_screen, units, enemy_units, coins, start, currType, typeLabel, current_level
+    global current_screen, units, enemy_units, start, currType, typeLabel, current_level
     current_screen = SCREENS["main_menu"]
     units = []
     enemy_units = []
-    coins = 0
     start = False
     currType = 'None'
     typeLabel = 'None'
     current_level = -1
 
 
-def spawn_enemies():
-    global enemy_units
+def spawn_enemies(level_num):
+    global enemy_units, coins
     enemy_units = []
-    while len(enemy_units) != 10:  # Количество врагов
-        x = random.randint(WIDTH // 2 + 20, WIDTH - 30)
-        y = random.randint(100, HEIGHT - 30)
-        verlap = any(
-            abs(unit.x - x) < 30 and abs(unit.y - y) < 30 for unit in enemy_units)
-        if not verlap:
-            typeN = random.randint(0, 2)
-            unit = Unit(tupeNum[typeN])
-            unit.x = x
-            unit.y = y
-            unit.isEnemy = True
-            enemy_units.append(unit)
+    file = f'{levelPath}{level_num}.json'
+    with open(file) as f:
+        data = json.load(f)
+
+    coins = data['money']
+    enemyList = data['enemyList']
+    for x, y, type in enemyList:
+        unit = Unit(type)
+        unit.x = x
+        unit.y = y
+        unit.isEnemy = True
+        enemy_units.append(unit)
 
 
 # Кнопки главного меню
@@ -214,17 +255,50 @@ main_menu_buttons = [
 ]
 
 # Кнопки выбора уровня
+st = HEIGHT // 2 - 50
 level_select_buttons = [
     Button(
-        "1 уровень", WIDTH // 2 - 150, HEIGHT // 2 - 50, 300, 50,
+        "1 уровень", WIDTH // 2 - 150, st, 300, 50,
         (0, 200, 0), (0, 150, 0),
         start_level, 1
     ),
     Button(
-        "Назад", WIDTH // 2 - 150, HEIGHT // 2 + 50, 300, 50,
+        "2 уровень", WIDTH // 2 - 150, st + 55, 300, 50,
+        (0, 200, 0) if playerLevel > 1 else (200, 0, 0),
+        (0, 150, 0) if playerLevel > 1 else (150, 0, 0),
+        start_level, 2
+    ),
+    Button(
+        "3 уровень", WIDTH // 2 - 150, st + 55 * 2, 300, 50,
+        (0, 200, 0) if playerLevel > 2 else (200, 0, 0),
+        (0, 150, 0) if playerLevel > 2 else (150, 0, 0),
+        start_level, 3
+    ),
+    Button(
+        "Песочница", WIDTH // 2 - 150, st + 55 * 3, 300, 50,
+        (0, 200, 0) if playerLevel > 3 else (200, 0, 0),
+        (0, 150, 0) if playerLevel > 3 else (150, 0, 0),
+        start_level, 4
+    ),
+    Button(
+        "Назад", WIDTH // 2 - 150, st + 55 * 4, 300, 50,
         (128, 128, 128), (100, 100, 100),
         lambda: switch_screen(SCREENS["main_menu"])
     )
+]
+
+# Кнопки при окончании боя
+fight_end_buttons = [
+    Button(
+        "В главное меню", WIDTH // 2, st + 55 * 4, 300, 50,
+        (128, 128, 128), (100, 100, 100),
+        lambda: switch_screen(SCREENS["main_menu"])
+    ),
+    Button(
+        "Заного", WIDTH // 2, st + 55 * 4, 300, 50,
+        (128, 128, 128), (100, 100, 100),
+        start_level, current_level
+    ),
 ]
 
 # Кнопки игры
@@ -255,6 +329,7 @@ def startGame():
         startBtn.text = 'Заново'
         startBtn.color = (255, 0, 0)
         startBtn.hover_color = (230, 0, 0)
+
     else:
         start = False
         typeLabel = 'None'
@@ -289,6 +364,10 @@ while running:
             for btn in level_select_buttons:
                 btn.handle_event(event)
 
+        elif current_screen in (SCREENS['win'], SCREENS['lose'], SCREENS['draw']):
+            for btn in fight_end_buttons:
+                btn.handle_event(event)
+
         elif current_screen == SCREENS["game"]:
             for btn in game_buttons:
                 btn.handle_event(event)
@@ -308,37 +387,73 @@ while running:
                                 unit.y = y
                                 units.append(unit)
                                 coins -= cost
-                    elif x > WIDTH / 2 + 15 and y > 105:
+                    elif x > WIDTH / 2 + 15 and y > 105 and current_level == 4:
                         overlap = any(
                             abs(unit.x - x) < 30 and abs(unit.y - y) < 30 for unit in units)
                         if not overlap:
-                            unit = Unit(currType)
+                            unit = Unit(currType, True)
                             unit.x = x
                             unit.y = y
-                            unit.isEnemy = True
                             enemy_units.append(unit)
 
     # Отрисовка
     screen.fill((255, 255, 255))
 
     if current_screen == SCREENS["main_menu"]:
+        # фон
+        screen.blit(menubackgroundPic, (0, 0))
         # Заголовок
         font = pygame.font.Font(None, 72)
         text = font.render("Primitives War", True, (0, 0, 0))
-        text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 4))
+        text_rect = text.get_rect(center=(WIDTH // 2, 50))
         screen.blit(text, text_rect)
         # Кнопки
         for btn in main_menu_buttons:
             btn.draw(screen)
 
     elif current_screen == SCREENS["level_select"]:
+        # фон
+        screen.blit(menubackgroundPic, (0, 0))
         # Заголовок
         font = pygame.font.Font(None, 72)
         text = font.render("Выберите уровень", True, (0, 0, 0))
-        text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 4))
+        text_rect = text.get_rect(center=(WIDTH // 2, 50))
         screen.blit(text, text_rect)
         # Кнопки
         for btn in level_select_buttons:
+            btn.draw(screen)
+
+    elif current_screen == SCREENS['win']:
+        # фон
+        screen.blit(menubackgroundPic, (0, 0))
+        # Заголовок
+        font = pygame.font.Font(None, 72)
+        text = font.render("Победа", True, (0, 255, 0))
+        text_rect = text.get_rect(center=(WIDTH // 2, 50))
+        screen.blit(text, text_rect)
+        for btn in fight_end_buttons:
+            btn.draw(screen)
+
+    elif current_screen == SCREENS['lose']:
+        # фон
+        screen.blit(menubackgroundPic, (0, 0))
+        # Заголовок
+        font = pygame.font.Font(None, 72)
+        text = font.render("Поражение", True, (255, 0, 0))
+        text_rect = text.get_rect(center=(WIDTH // 2, 50))
+        screen.blit(text, text_rect)
+        for btn in fight_end_buttons:
+            btn.draw(screen)
+
+    elif current_screen == SCREENS['draw']:
+        # фон
+        screen.blit(menubackgroundPic, (0, 0))
+        # Заголовок
+        font = pygame.font.Font(None, 72)
+        text = font.render("Ничья!", True, (255, 255, 255))
+        text_rect = text.get_rect(center=(WIDTH // 2, 50))
+        screen.blit(text, text_rect)
+        for btn in fight_end_buttons:
             btn.draw(screen)
 
     elif current_screen == SCREENS["game"]:
@@ -363,6 +478,23 @@ while running:
                         units.remove(unit)
                     else:
                         enemy_units.remove(unit)
+
+            if enemy_units == [] and units != []:
+                current_screen = SCREENS['win']
+                if current_level > playerLevel:
+                    playerLevel = current_level
+                    with open(r'D:\!PycharmProjects\!PrimitiveWar2\data\player.json') as f:
+                        data = json.load(f)
+
+                    data['level'] = playerLevel
+
+                    text = json.dump(data)
+                    with open(r'D:\!PycharmProjects\!PrimitiveWar2\data\player.json', 'w') as f:
+                        f.writelines(text)
+            elif enemy_units != [] and units == []:
+                current_screen = SCREENS['lose']
+            elif enemy_units == [] and units == []:
+                current_screen = SCREENS['draw']
 
         # Игровой интерфейс
         for btn in game_buttons:
@@ -398,7 +530,7 @@ while running:
 
         x, y = pygame.mouse.get_pos()
 
-        if x < WIDTH / 2 - 15 and y > 105 and typeLabel != 'None':
+        if x < (WIDTH / 2 - 15) if current_level < 4 else WIDTH - 15 and y > 105 and typeLabel != 'None':
             pygame.draw.rect(screen, (150, 150, 150), (x - 15, y - 15, 30, 30))
 
     pygame.display.flip()
