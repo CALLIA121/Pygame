@@ -68,7 +68,8 @@ class Unit:
         if targets:
             nearest_enemy = min(targets, key=lambda enemy: math.dist(
                 (self.x, self.y), (enemy.x, enemy.y)))
-            distance = math.sqrt((self.x - nearest_enemy.x) ** 2 + (self.y - nearest_enemy.y) ** 2)
+            distance = math.sqrt((self.x - nearest_enemy.x)
+                                 ** 2 + (self.y - nearest_enemy.y) ** 2)
 
             if distance <= self.attack_range:
                 # Запоминаем координаты для линии выстрела (только для стрелков)
@@ -80,8 +81,6 @@ class Unit:
                     )
 
                 nearest_enemy.HP -= self.damage
-                if nearest_enemy.HP <= 0:
-                    targets.remove(nearest_enemy)
 
     def draw(self, screen):
         """ Отрисовка юнита и полоски HP. """
@@ -359,9 +358,11 @@ while running:
                     enemy.attack(units)  # Атакует
 
             for unit in units + enemy_units:
-                if unit.type == "Shooter" and unit.attack_line:
-                    # Обновление линии происходит автоматически в методе draw
-                    pass
+                if unit.HP <= 0:
+                    if unit in units:
+                        units.remove(unit)
+                    else:
+                        enemy_units.remove(unit)
 
         # Игровой интерфейс
         for btn in game_buttons:
@@ -404,4 +405,3 @@ while running:
     pygame.time.Clock().tick(60)
 
 pygame.quit()
-
