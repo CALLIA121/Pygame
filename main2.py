@@ -3,7 +3,7 @@ import pygame
 import sys
 from pygame import MOUSEBUTTONDOWN
 from settings import *
-import random
+import os
 import json
 
 # Состояния игры
@@ -16,9 +16,11 @@ SCREENS = {
     'draw': 5
 }
 
+print(os.path.abspath("data"))
+
 current_screen = SCREENS["main_menu"]
 
-with open(r'data\player.json') as f:
+with open(os.path.abspath(r'data/player.json')) as f:
     data = json.load(f)
 
 playerLevel = data['level']
@@ -32,14 +34,14 @@ start = False
 typeLabel = 'None'
 currType = 'None'
 typeImage = {
-    'Attaker': pygame.image.load(typeImagePath['AttakerN']),
-    'Defender': pygame.image.load(typeImagePath['DefenderN']),
-    'Shooter': pygame.image.load(typeImagePath['ShooterN'])
+    'Attaker': pygame.image.load(os.path.abspath(typeImagePath['AttakerN'])),
+    'Defender': pygame.image.load(os.path.abspath(typeImagePath['DefenderN'])),
+    'Shooter': pygame.image.load(os.path.abspath(typeImagePath['ShooterN']))
 }
 typeImageEnemy = {
-    'Attaker': pygame.image.load(typeImagePath['AttakerE']),
-    'Defender': pygame.image.load(typeImagePath['DefenderE']),
-    'Shooter': pygame.image.load(typeImagePath['ShooterE'])
+    'Attaker': pygame.image.load(os.path.abspath(typeImagePath['AttakerE'])),
+    'Defender': pygame.image.load(os.path.abspath(typeImagePath['DefenderE'])),
+    'Shooter': pygame.image.load(os.path.abspath(typeImagePath['ShooterE']))
 }
 menubackgroundPic = pygame.image.load(menubackground)
 game_bg = pygame.image.load(gamebackground)
@@ -209,7 +211,7 @@ def start_level(level_num):
         currType = 'None'
         typeLabel = 'None'
         current_level = level_num
-        if level_num != 4:  # Не в песочнице
+        if level_num != 3:  # Не в песочнице
             spawn_enemies(level_num)  # Спавним врагов
 
 
@@ -271,9 +273,9 @@ level_select_buttons = [
     ),
     Button(
         "Песочница", WIDTH // 2 - 150, st + 55 * 2, 300, 50,
-        (0, 200, 0) if playerLevel > 3 else (200, 0, 0),
-        (0, 150, 0) if playerLevel > 3 else (150, 0, 0),
-        start_level, 4
+        (0, 200, 0) if playerLevel > 2 else (200, 0, 0),
+        (0, 150, 0) if playerLevel > 2 else (150, 0, 0),
+        start_level, 3
     ),
     Button(
         "Назад", WIDTH // 2 - 150, st + 55 * 3, 300, 50,
@@ -382,7 +384,7 @@ while running:
                                 unit.y = y
                                 units.append(unit)
                                 coins -= cost
-                    elif x > WIDTH / 2 + 15 and y > 105 and current_level == 4:
+                    elif x > WIDTH / 2 + 15 and y > 105 and current_level == 3:
                         overlap = any(
                             abs(unit.x - x) < 30 and abs(unit.y - y) < 30 for unit in units)
                         if not overlap:
@@ -479,13 +481,13 @@ while running:
                 current_screen = SCREENS['win']
                 if current_level == playerLevel:
                     playerLevel = current_level + 1
-                    with open(r'data\player.json') as f:
+                    with open(r'data/player.json') as f:
                         data = json.load(f)
 
                     data['level'] = playerLevel
 
                     text = json.dumps(data)
-                    with open(r'data\player.json', 'w') as f:
+                    with open(r'data/player.json', 'w') as f:
                         f.writelines(text)
                 st = HEIGHT // 2 - 50
                 level_select_buttons = [
@@ -503,9 +505,9 @@ while running:
 
                     Button(
                         "Песочница", WIDTH // 2 - 150, st + 55 * 2, 300, 50,
-                        (0, 200, 0) if playerLevel > 3 else (200, 0, 0),
-                        (0, 150, 0) if playerLevel > 3 else (150, 0, 0),
-                        start_level, 4
+                        (0, 200, 0) if playerLevel > 2 else (200, 0, 0),
+                        (0, 150, 0) if playerLevel > 2 else (150, 0, 0),
+                        start_level, 3
                     ),
                     Button(
                         "Назад", WIDTH // 2 - 150, st + 55 * 3, 300, 50,
@@ -552,7 +554,7 @@ while running:
 
         x, y = pygame.mouse.get_pos()
 
-        if x < (WIDTH / 2 - 15) if current_level < 4 else WIDTH - 15 and y > 105 and typeLabel != 'None':
+        if x < ((WIDTH / 2 - 15) if current_level < 3 else WIDTH - 15) and y > 105 and typeLabel != 'None':
             pygame.draw.rect(screen, (150, 150, 150), (x - 15, y - 15, 30, 30))
 
     pygame.display.flip()
