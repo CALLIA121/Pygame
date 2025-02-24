@@ -11,6 +11,6 @@ d = {
     'money': 600
 }
 text = json.dumps(d)
-with open(r'D:\!PycharmProjects\!PrimitiveWar2\data\level2.json', 'w') as f:
+with open(r'data\level2.json', 'w') as f:
     f.write(text)
     f.write('\n')

@@ -18,7 +18,7 @@ SCREENS = {
 
 current_screen = SCREENS["main_menu"]
 
-with open(r'D:\!PycharmProjects\!PrimitiveWar2\data\player.json') as f:
+with open(r'data\player.json') as f:
     data = json.load(f)
 
 playerLevel = data['level']
@@ -295,7 +295,7 @@ fight_end_buttons = [
         lambda: switch_screen(SCREENS["main_menu"])
     ),
     Button(
-        "Заного", WIDTH // 2 + 155, HEIGHT // 2, 300, 50,
+        "Заново", WIDTH // 2 + 155, HEIGHT // 2, 300, 50,
         (128, 128, 128), (100, 100, 100),
         lambda: startGame()
     ),

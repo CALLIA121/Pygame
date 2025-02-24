@@ -45,23 +45,23 @@ def process_image_normal(input_path, output_path):
 
 
 # Путь к входному изображению
-input_image_path = r'D:\!PycharmProjects\!PrimitiveWar2\data\shooter.png'
+input_image_path = r'data\shooter.png'
 # Путь для сохранения сжатого изображения
-output_image_path = r'D:\!PycharmProjects\!PrimitiveWar2\data\shooter'
+output_image_path = r'data\shooter'
 # Сжимаем изображение (добавляем обводку врагу)
 process_image_enemy(input_image_path, output_image_path)
 process_image_normal(input_image_path, output_image_path)
 # Путь к входному изображению
-input_image_path = r'D:\!PycharmProjects\!PrimitiveWar2\data\defender.png'
+input_image_path = r'data\defender.png'
 # Путь для сохранения сжатого изображения
-output_image_path = r'D:\!PycharmProjects\!PrimitiveWar2\data\defender'
+output_image_path = r'data\defender'
 # Сжимаем изображение (добавляем обводку врагу)
 process_image_enemy(input_image_path, output_image_path)
 process_image_normal(input_image_path, output_image_path)
 # Путь к входному изображению
-input_image_path = r'D:\!PycharmProjects\!PrimitiveWar2\data\atacker.png'
+input_image_path = r'data\atacker.png'
 # Путь для сохранения сжатого изображения
-output_image_path = r'D:\!PycharmProjects\!PrimitiveWar2\data\atacker'
+output_image_path = r'data\atacker'
 # Сжимаем изображение (добавляем обводку врагу)
 process_image_enemy(input_image_path, output_image_path)
 process_image_normal(input_image_path, output_image_path)

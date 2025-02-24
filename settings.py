@@ -35,5 +35,5 @@ typeImagePath = {
     'DefenderE': r'data\defender_e.png',
     'ShooterE': r'data\shooter_e.png'
 }
-menubackground = r'D:\!PycharmProjects\!PrimitiveWar2\data\background_menu.png'
-levelPath = r'D:\!PycharmProjects\!PrimitiveWar2\data\level'
+menubackground = r'data\background_menu.png'
+levelPath = r'data\level'
