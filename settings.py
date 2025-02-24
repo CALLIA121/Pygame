@@ -35,5 +35,6 @@ typeImagePath = {
     'DefenderE': r'data\defender_e.png',
     'ShooterE': r'data\shooter_e.png'
 }
+gamebackground = r'data\game_background.png'
 menubackground = r'data\background_menu.png'
 levelPath = r'data\level'

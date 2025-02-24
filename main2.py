@@ -42,6 +42,7 @@ typeImageEnemy = {
     'Shooter': pygame.image.load(typeImagePath['ShooterE'])
 }
 menubackgroundPic = pygame.image.load(menubackground)
+game_bg = pygame.image.load(gamebackground)
 
 # Инициализация Pygame
 pygame.init()
@@ -269,19 +270,13 @@ level_select_buttons = [
         start_level, 2
     ),
     Button(
-        "3 уровень", WIDTH // 2 - 150, st + 55 * 2, 300, 50,
-        (0, 200, 0) if playerLevel > 2 else (200, 0, 0),
-        (0, 150, 0) if playerLevel > 2 else (150, 0, 0),
-        start_level, 3
-    ),
-    Button(
-        "Песочница", WIDTH // 2 - 150, st + 55 * 3, 300, 50,
+        "Песочница", WIDTH // 2 - 150, st + 55 * 2, 300, 50,
         (0, 200, 0) if playerLevel > 3 else (200, 0, 0),
         (0, 150, 0) if playerLevel > 3 else (150, 0, 0),
         start_level, 4
     ),
     Button(
-        "Назад", WIDTH // 2 - 150, st + 55 * 4, 300, 50,
+        "Назад", WIDTH // 2 - 150, st + 55 * 3, 300, 50,
         (128, 128, 128), (100, 100, 100),
         lambda: switch_screen(SCREENS["main_menu"])
     )
@@ -457,6 +452,7 @@ while running:
             btn.draw(screen)
 
     elif current_screen == SCREENS["game"]:
+        screen.blit(game_bg, (0, 0))
         if start:  # Если бой начался
             print(it)
             it += 1
@@ -483,13 +479,13 @@ while running:
                 current_screen = SCREENS['win']
                 if current_level == playerLevel:
                     playerLevel = current_level + 1
-                    with open(r'D:\!PycharmProjects\!PrimitiveWar2\data\player.json') as f:
+                    with open(r'data\player.json') as f:
                         data = json.load(f)
 
                     data['level'] = playerLevel
 
                     text = json.dumps(data)
-                    with open(r'D:\!PycharmProjects\!PrimitiveWar2\data\player.json', 'w') as f:
+                    with open(r'data\player.json', 'w') as f:
                         f.writelines(text)
                 st = HEIGHT // 2 - 50
                 level_select_buttons = [
@@ -504,20 +500,15 @@ while running:
                         (0, 150, 0) if playerLevel > 1 else (150, 0, 0),
                         start_level, 2
                     ),
+
                     Button(
-                        "3 уровень", WIDTH // 2 - 150, st + 55 * 2, 300, 50,
-                        (0, 200, 0) if playerLevel > 2 else (200, 0, 0),
-                        (0, 150, 0) if playerLevel > 2 else (150, 0, 0),
-                        start_level, 3
-                    ),
-                    Button(
-                        "Песочница", WIDTH // 2 - 150, st + 55 * 3, 300, 50,
+                        "Песочница", WIDTH // 2 - 150, st + 55 * 2, 300, 50,
                         (0, 200, 0) if playerLevel > 3 else (200, 0, 0),
                         (0, 150, 0) if playerLevel > 3 else (150, 0, 0),
                         start_level, 4
                     ),
                     Button(
-                        "Назад", WIDTH // 2 - 150, st + 55 * 4, 300, 50,
+                        "Назад", WIDTH // 2 - 150, st + 55 * 3, 300, 50,
                         (128, 128, 128), (100, 100, 100),
                         lambda: switch_screen(SCREENS["main_menu"])
                     )
@@ -568,4 +559,3 @@ while running:
     pygame.time.Clock().tick(60)
 
 pygame.quit()
-
